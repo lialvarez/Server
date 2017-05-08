@@ -20,6 +20,7 @@ public:
 	void setCommandLine();
 	void putNext(std::string inputText);
 	void putClear(std::string inputText);
+	void shiftLinesUp();
 	WINDOW * terminalWindow;
 private:
 	unsigned lastLine;

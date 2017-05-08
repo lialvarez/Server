@@ -45,8 +45,31 @@ void Screen::putClear(std::string inputText)
 
 void Screen::putNext(std::string inputText)
 {	
-	move(lastLine, 0);
-	printw("\n");
+	if (lastLine == terminalWindow->_maxy - 5)
+	{
+		shiftLinesUp();
+		move(lastLine, 0);
+	}
+	else
+	{
+		move(lastLine + 1, 0);
+	}
+
 	printw(inputText.c_str());
+	lastLine = terminalWindow->_cury;
 	refresh();
+}
+
+void Screen::shiftLinesUp()
+{
+	char *aux = new char[terminalWindow->_maxx];
+	for (int i = 0; i < lastLine; i++)
+	{
+
+		mvinstr(i + 1, 0, aux);
+		mvprintw(i, 0, aux);
+		refresh();
+	}
+
+	
 }

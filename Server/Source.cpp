@@ -4,6 +4,8 @@
 #include "eventSources.h"
 #include "Screen.h"
 #include <string>
+#include <sstream>
+
 int main()
 {
 	Screen Terminal;
@@ -12,7 +14,7 @@ int main()
 	genericEvent *ev;
 	eventGenerator evGen(&Info);
 	genericFSM FSM;
-
+		
 	do 
 	{
 		evGen.generateEvent();
