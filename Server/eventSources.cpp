@@ -127,37 +127,44 @@ genericEvent * UserEventSource::insertEvent()
 
 bool TimeoutEventSource::isThereEvent()
 {
-	bool ret = false;
-	if (timeout)
+	if ((clock() - tInicial) > ONE_MINUTE * CLOCKS_PER_SEC)
 	{
+		timeout = true;
 		evCode = TIMEOUT;
-		ret = true;
 	}
 	else
 	{
+		timeout = false;
 		evCode = NO_EV;
 	}
-	return ret;
+	return timeout;
 }
 
-void TimeoutEventSource::setTimeout(const boost::system::error_code& /*e*/)
+/* //esta funcion no es necesaria
+void TimeoutEventSource::setTimeout(const boost::system::error_code& )
 {
 	timeout = true;	//Set timeout modifica una variable de control que indica si ocurrio un timeout
+	tInicial = clock();
 }
+*/
 
 void TimeoutEventSource::startTimer()
 
 {	//Esta funcion no me estaria funcionando:
-
 	//timer.async_wait(&setTimeout);	//Cuando transcurra el tiempo seteado, se llamara al metodo "setTimeout"
 
 	timeout = false;	//Se setea la variable de control en false, indicando que no ha ocurrido timeout
+	tInicial = clock();
 }
 
+/* //esta funcion no es necesaria
 void TimeoutEventSource::stopTimer()
 {
-	timer.cancel();	//Se cancela el timer
+	//timer.cancel();	//Se cancela el timer
+	timeout = false;
+
 }
+*/
 
 genericEvent * TimeoutEventSource::insertEvent()
 {

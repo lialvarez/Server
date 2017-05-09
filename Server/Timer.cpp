@@ -1,5 +1,6 @@
 
 #include <ctime>
+#define ONE_MINUTE 60
 
 ////////////////////////////// timer borrador ejemplo //////////////////////////////
 
@@ -11,7 +12,7 @@ bool timer_borrador_ejemplo ()
 	bool ret = false;
 	while (!ret) //Esto seria el while gigante. Habria que ver bien. Lo mejor seria que funcione el timer de boost
 	{			//probar poll_one
-		if ((clock() - tInicial) > 5 * CLOCKS_PER_SEC)
+		if ((clock() - tInicial) > ONE_MINUTE * CLOCKS_PER_SEC)
 		{
 			//hacer lo que queramos
 			ret = true;
