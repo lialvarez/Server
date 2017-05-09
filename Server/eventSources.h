@@ -47,7 +47,8 @@ class TimeoutEventSource : public genericEventSource
 {
 public:
 
-	TimeoutEventSource() :timer(io, boost::posix_time::minutes(1)), timeout(false) {}
+	//TimeoutEventSource() :timer(io, boost::posix_time::minutes(1)), timeout(false) {}
+	TimeoutEventSource();
 	bool isThereEvent();
 	void startTimer();
 	void stopTimer();
@@ -58,6 +59,7 @@ private:
 
 	clock_t tInicial;
 	bool timeout;	//Si está en true se cumplió el tiempo.
+	bool timerRunning;
 
 	//void setTimeout(const boost::system::error_code& /*e*/);
 };

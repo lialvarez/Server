@@ -9,7 +9,13 @@
 
 NetworkEventSource::NetworkEventSource() {};
 NetworkEventSource::~NetworkEventSource() {};
-bool NetworkEventSource::isThereEvent() { return false; } //MALE: esta es la funcion que lee lo que le envian por red
+bool NetworkEventSource::isThereEvent() //MALE: esta es la funcion que lee lo que le envian por red
+{ 
+	server.receivePackage(); //en el main llamar al constructor de Networking, creando el objeto server
+	return server.getPackageArrived();
+} 
+
+
 void NetworkEventSource::setServerIP(std::string _serverIP)
 {
 	serverIP = _serverIP;
@@ -123,13 +129,18 @@ genericEvent * UserEventSource::insertEvent()
 
 /*****  TIMEOUTS EVENT SOURCE  *****/
 
-//NO TOCAR LOS DE TIMEOUT, CREO QUE YA ESTAN LISTOS
+TimeoutEventSource::TimeoutEventSource()
+{
+	timeout = false;
+	timerRunning = false;
+}
 
 bool TimeoutEventSource::isThereEvent()
 {
-	if ((clock() - tInicial) > ONE_MINUTE * CLOCKS_PER_SEC)
+	if (((clock() - tInicial) > ONE_MINUTE * CLOCKS_PER_SEC) && timerRunning)
 	{
 		timeout = true;
+		timerRunning = false;
 		evCode = TIMEOUT;
 	}
 	else
@@ -140,36 +151,19 @@ bool TimeoutEventSource::isThereEvent()
 	return timeout;
 }
 
-/* //esta funcion no es necesaria
-void TimeoutEventSource::setTimeout(const boost::system::error_code& )
-{
-	timeout = true;	//Set timeout modifica una variable de control que indica si ocurrio un timeout
-	tInicial = clock();
-}
-*/
 
 void TimeoutEventSource::startTimer()
 
-{	//Esta funcion no me estaria funcionando:
-	//timer.async_wait(&setTimeout);	//Cuando transcurra el tiempo seteado, se llamara al metodo "setTimeout"
-
+{	
 	timeout = false;	//Se setea la variable de control en false, indicando que no ha ocurrido timeout
 	tInicial = clock();
+	timerRunning = true;
 }
-
-/* //esta funcion no es necesaria
-void TimeoutEventSource::stopTimer()
-{
-	//timer.cancel();	//Se cancela el timer
-	timeout = false;
-
-}
-*/
 
 genericEvent * TimeoutEventSource::insertEvent()
 {
 	genericEvent * ret;
-	//Hago un switch solo para mantener la estructura del metodo en las otras clases
+
 	switch (evCode)
 	{
 	case TIMEOUT:
