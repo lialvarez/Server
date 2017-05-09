@@ -7,6 +7,9 @@
 #include <boost\asio.hpp>
 #include "Screen.h"
 #include "genericEventSource.h"
+#include <ctime>
+
+#define ONE_MINUTE 60
 
 
 class NetworkEventSource : public genericEventSource
@@ -50,10 +53,13 @@ public:
 	void stopTimer();
 	genericEvent* insertEvent();
 private:
-	boost::asio::io_service io;
-	boost::asio::deadline_timer timer;
-	bool timeout;
-	void setTimeout(const boost::system::error_code& /*e*/);
+	//boost::asio::io_service io;
+	//boost::asio::deadline_timer timer;
+
+	clock_t tInicial;
+	bool timeout;	//Si está en true se cumplió el tiempo.
+
+	//void setTimeout(const boost::system::error_code& /*e*/);
 };
 
 class SoftwareEventSource : public genericEventSource
