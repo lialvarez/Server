@@ -33,6 +33,7 @@ public:
 	void afterReceiving(const boost::system::error_code& error, std::size_t transfered_bytes); //callback que no se usa (NO BORRAR)
 	void setServerAcceptor(boost::asio::ip::tcp::acceptor*);
 	boost::asio::io_service *getIO_handler();
+	void getPackageArrived(); //DEFINIR
 
 private:
 	boost::asio::io_service *IO_handler;
