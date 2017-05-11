@@ -46,22 +46,14 @@ private:
 class TimeoutEventSource : public genericEventSource
 {
 public:
-
-	//TimeoutEventSource() :timer(io, boost::posix_time::minutes(1)), timeout(false) {}
 	TimeoutEventSource();
 	bool isThereEvent();
 	void startTimer();
-	void stopTimer();
 	genericEvent* insertEvent();
 private:
-	//boost::asio::io_service io;
-	//boost::asio::deadline_timer timer;
-
 	clock_t tInicial;
 	bool timeout;	//Si está en true se cumplió el tiempo.
 	bool timerRunning;
-
-	//void setTimeout(const boost::system::error_code& /*e*/);
 };
 
 class SoftwareEventSource : public genericEventSource

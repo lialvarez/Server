@@ -9,6 +9,7 @@
 
 NetworkEventSource::NetworkEventSource() {};
 NetworkEventSource::~NetworkEventSource() {};
+
 bool NetworkEventSource::isThereEvent() //MALE: esta es la funcion que lee lo que le envian por red
 { 
 	server.receivePackage(); //en el main llamar al constructor de Networking, creando el objeto server

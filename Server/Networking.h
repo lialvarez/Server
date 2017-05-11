@@ -15,42 +15,49 @@
 #define PACKAGE_MAX_SIZE 516	
 
 
-typedef char _BYTE;
+typedef char MYBYTE;
 
 typedef enum {DATA_OP, ACK_OP, ERROR_OP}opCodes;
 
 class Networking
 {
 public:
+	void sendPackage(genericPackage *Pkg);
+	void receivePackage();
 	Networking();//
 	~Networking(); //Ver cuando llamarlo (cuando hay error o termina la comunicacion)
 	void startConnection();//
-	void sendData(FILE *filePointer, unsigned int blockNumber);
-	void sendAck(unsigned int blockNumber = 0);
-	void sendError(std::string errorMsg, unsigned int errorCode);
-	void receivePackage();
-	void afterSending(const boost::system::error_code& error, std::size_t transfered_bytes); //callback que no se usa (NO BORRAR)
-	void afterReceiving(const boost::system::error_code& error, std::size_t transfered_bytes); //callback que no se usa (NO BORRAR)
-	void setServerAcceptor(boost::asio::ip::tcp::acceptor*);
-	boost::asio::io_service *getIO_handler();
-	void getPackageArrived(); //DEFINIR
+
+	unsigned int getBlockNumber();
+	MYBYTE *getInputPackage();
+	errorCodes getErrorCode();
+	std::string getData();
+	std::string getErrorMsg();
+	unsigned int getBlockNumber();
 
 private:
 	boost::asio::io_service *IO_handler;
 	boost::asio::ip::tcp::socket *serverSocket;
 	boost::asio::ip::tcp::acceptor *serverAcceptor;
+	boost::asio::ip::tcp::resolver::iterator endpoint;
 
+	void packageDecode();
 
-	void packageSET(opCodes opCode, unsigned int blockNumber = 0, FILE *filePointer = NULL);
-	void sendPackage();
+	std::string fileToTransfer;
+
+	opCodes receivedPackageType;
+	std::string data;	//Se almacena la data en caso de recibir DATA
+	std::string errorMsg;
+	errorCodes errorCode;
+	unsigned int blockNumber;
+
+	MYBYTE *inputPackage;
+	MYBYTE *outputPackage;
 
 	const char* serverAddress;
-	std::string fileToTransfer;
-	std::string errorMsg;
 
-	unsigned int errorCode;
-	_BYTE *inputPackage;
-	_BYTE *outputPackage;
+	MYBYTE *inputPackage;	//ver si quedan
+	MYBYTE *outputPackage;
 	bool packageArrived;
 };
 #endif // !NETWORKING_H
