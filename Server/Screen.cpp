@@ -60,16 +60,31 @@ void Screen::putNext(std::string inputText)
 	refresh();
 }
 
+void Screen::showErrorMsg(errorCodes code, std::string errorMsg)
+{
+	switch (code)
+	{
+	case NOT_DEFINED:
+		putNext(errorMsg);
+		break;
+	case FILE_NOT_FOUND:
+		putNext("RRQ failed. File not found.");
+		break;
+	case FILE_ALREADY_EXISTS:
+		putNext("WRQ failed. File already exists");
+		break;
+	default:
+		break;
+	}
+}
+
 void Screen::shiftLinesUp()
 {
 	char *aux = new char[terminalWindow->_maxx];
 	for (int i = 0; i < lastLine; i++)
 	{
-
 		mvinstr(i + 1, 0, aux);
 		mvprintw(i, 0, aux);
 		refresh();
 	}
-
-	
 }

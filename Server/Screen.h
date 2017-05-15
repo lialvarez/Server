@@ -1,6 +1,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
+#include "Packages.h"
 #include "curses.h"
 #include <string>
 
@@ -20,6 +21,7 @@ public:
 	void setCommandLine();
 	void putNext(std::string inputText);
 	void putClear(std::string inputText);
+	void showErrorMsg(errorCodes code, std::string errorMsg);
 	void shiftLinesUp();
 	WINDOW * terminalWindow;
 private:
