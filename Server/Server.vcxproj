@@ -171,7 +171,6 @@
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="States.cpp" />
-    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

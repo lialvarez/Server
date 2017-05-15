@@ -50,7 +50,6 @@ public:
 	TimeoutEventSource();
 	bool isThereEvent();
 	void startTimer();
-	void stopTimer();
 	genericEvent* insertEvent();
 private:
 	clock_t tInicial;

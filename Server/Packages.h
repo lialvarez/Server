@@ -1,31 +1,25 @@
+
 #ifndef PACKAGES_H
 #define PACKAGES_H
 #include <string>
-#include <vector>
 
 typedef char MYBYTE;
-
-typedef enum { RRQ_OP = 1, WRQ_OP, DATA_OP, ACK_OP, ERROR_OP }opCodes;
-typedef enum { NOT_DEFINED = 1, FILE_NOT_FOUND, FILE_ALREADY_EXISTS }errorCodes;
 
 class genericPackage
 {
 public:
-	std::vector<char> package;
-	virtual void setPackage() = 0;
+	MYBYTE *package;
+	virtual void setPackage() {}
 	opCodes code;
 };
 
 class Data :public genericPackage
 {
 public:
-	Data(std::vector<char> _data, unsigned int _blockNumber);
-	void setPackage();
-
-private:
-	std::vector<char> data;
-	unsigned int packageLength;
+	Data(std::string _data, unsigned int _blockNumber = 1) :data(_data), blockNumber(_blockNumber) { code = DATA_OP; }
+	std::string data;
 	unsigned int blockNumber;
+	void setPackage();
 };
 
 class Acknowledge :public genericPackage

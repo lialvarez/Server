@@ -4,7 +4,7 @@
 #include "Screen.h"
 #include "genericEvent.h"
 
-typedef char _BYTE;
+typedef char MYBYTE;
 
 //USER EVENTS
 
@@ -36,7 +36,7 @@ public:
 
 private:
 	unsigned int blockNumber;	//Guardar el numero de bloque aca.
-	_BYTE* dataBuffer;
+	MYBYTE* dataBuffer;
 };
 
 class EV_Ack : public genericEvent
