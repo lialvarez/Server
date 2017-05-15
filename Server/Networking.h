@@ -17,7 +17,7 @@
 
 typedef char _BYTE;
 
-typedef enum {DATA_OP, ACK_OP, ERROR_OP}opCodes;
+typedef enum {RRQ_OP=1, WRQ_OP, DATA_OP, ACK_OP, ERROR_OP}opCodes;
 
 class Networking
 {
@@ -32,8 +32,9 @@ public:
 	void afterSending(const boost::system::error_code& error, std::size_t transfered_bytes); //callback que no se usa (NO BORRAR)
 	void afterReceiving(const boost::system::error_code& error, std::size_t transfered_bytes); //callback que no se usa (NO BORRAR)
 	void setServerAcceptor(boost::asio::ip::tcp::acceptor*);
+	void packageDecode();
 	boost::asio::io_service *getIO_handler();
-	void getPackageArrived(); //DEFINIR
+	bool getPackageArrived(); //DEFINIR
 
 private:
 	boost::asio::io_service *IO_handler;
@@ -48,6 +49,7 @@ private:
 	std::string fileToTransfer;
 	std::string errorMsg;
 
+	opCodes receivedPackageType;
 	unsigned int errorCode;
 	_BYTE *inputPackage;
 	_BYTE *outputPackage;

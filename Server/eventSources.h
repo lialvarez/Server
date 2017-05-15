@@ -7,19 +7,20 @@
 #include <boost\asio.hpp>
 #include "Screen.h"
 #include "genericEventSource.h"
+#include "Networking.h"
 #include <ctime>
 
 #define ONE_MINUTE 60
 
-
 class NetworkEventSource : public genericEventSource
 {
 public:
-	NetworkEventSource();
-	~NetworkEventSource();
+	NetworkEventSource(Networking *_server) :server(_server){}
 	bool isThereEvent();
 	void setServerIP(std::string _serverIP);
+	genericEvent* insertEvent();
 	std::string getServerIP();
+	Networking *server;
 private:
 	std::string serverIP;
 };
@@ -46,22 +47,15 @@ private:
 class TimeoutEventSource : public genericEventSource
 {
 public:
-
-	//TimeoutEventSource() :timer(io, boost::posix_time::minutes(1)), timeout(false) {}
 	TimeoutEventSource();
 	bool isThereEvent();
 	void startTimer();
 	void stopTimer();
 	genericEvent* insertEvent();
 private:
-	//boost::asio::io_service io;
-	//boost::asio::deadline_timer timer;
-
 	clock_t tInicial;
 	bool timeout;	//Si está en true se cumplió el tiempo.
 	bool timerRunning;
-
-	//void setTimeout(const boost::system::error_code& /*e*/);
 };
 
 class SoftwareEventSource : public genericEventSource

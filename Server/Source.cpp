@@ -3,14 +3,17 @@
 #include "genericFSM.h"
 #include "eventSources.h"
 #include "Screen.h"
+#include "Networking.h"
 #include <string>
 #include <sstream>
 
 int main()
 {
 	Screen Terminal;
+	Networking Server;
+	NetworkEventSource networkSource(&Server);
 	UserEventSource userSource(&Terminal);
-	usefulInfo Info(&userSource);
+	usefulInfo Info(&userSource, &networkSource);
 	genericEvent *ev;
 	eventGenerator evGen(&Info);
 	genericFSM FSM;

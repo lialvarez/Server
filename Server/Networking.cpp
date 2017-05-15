@@ -1,4 +1,3 @@
-
 #include "Networking.h"
 
 Networking::Networking()
@@ -26,12 +25,10 @@ Networking::~Networking()
 	//agregar el delete que falta
 }
 
-
 void Networking::setServerAcceptor(boost::asio::ip::tcp::acceptor* newAcceptor)
 {
 	serverAcceptor = newAcceptor;
 }
-
 
 void Networking::startConnection()
 {
@@ -40,12 +37,10 @@ void Networking::startConnection()
 	serverAcceptor->accept(*serverSocket);
 }
 
-
 boost::asio::io_service* Networking::getIO_handler()
 {
 	return IO_handler;
 }
-
 
 void Networking::sendData(FILE *filePointer, unsigned int blockNumber)
 {
@@ -132,7 +127,7 @@ void Networking::receivePackage()
 
 	async_read(*serverSocket, boost::asio::buffer(buf, PACKAGE_MAX_SIZE), handler);		// Si recibe algo, lo guarda en buf.
 
-	if (strcmp(buf, emptyBuf))
+	if (!strcmp(buf, emptyBuf))
 	{
 		packageArrived = false;
 	}
@@ -152,5 +147,14 @@ void Networking::receivePackage()
 	}
 }
 
-void Networking::afterReceiving(const boost::system::error_code& error, std::size_t transfered_bytes) {
+bool Networking::getPackageArrived()
+{
+	return packageArrived;
 }
+
+void Networking::packageDecode()
+{
+	receivedPackageType = (opCodes)inputPackage[1];
+}
+
+void Networking::afterReceiving(const boost::system::error_code& error, std::size_t transfered_bytes) {}

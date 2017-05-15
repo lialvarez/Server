@@ -7,14 +7,11 @@
 
 /*****  NETWORK EVENT SOURCE  *****/
 
-NetworkEventSource::NetworkEventSource() {};
-NetworkEventSource::~NetworkEventSource() {};
 bool NetworkEventSource::isThereEvent() //MALE: esta es la funcion que lee lo que le envian por red
 { 
-	server.receivePackage(); //en el main llamar al constructor de Networking, creando el objeto server
-	return server.getPackageArrived();
+	server->receivePackage(); //en el main llamar al constructor de Networking, creando el objeto server
+	return server->getPackageArrived();
 } 
-
 
 void NetworkEventSource::setServerIP(std::string _serverIP)
 {
@@ -25,6 +22,26 @@ std::string NetworkEventSource::getServerIP()
 {
 	return serverIP;
 }
+
+genericEvent * NetworkEventSource::insertEvent()
+{
+	genericEvent * ret;
+
+	switch (evCode)
+	{
+	case DATA:
+		break;
+	case ACK:
+		break;
+	case ERRO:
+		break;
+	case CONNECTION_FAIL:
+		break;
+	default:
+		break;
+	}
+}
+
 
 /*****  USER EVENT SOURCE  *****/
 

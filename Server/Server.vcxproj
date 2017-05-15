@@ -150,11 +150,13 @@
     <ClInclude Include="eventGenerator.h" />
     <ClInclude Include="Events.h" />
     <ClInclude Include="eventSources.h" />
+    <ClInclude Include="FileSystem.h" />
     <ClInclude Include="genericEvent.h" />
     <ClInclude Include="genericEventSource.h" />
     <ClInclude Include="genericFSM.h" />
     <ClInclude Include="genericState.h" />
     <ClInclude Include="Networking.h" />
+    <ClInclude Include="Packages.h" />
     <ClInclude Include="Screen.h" />
     <ClInclude Include="States.h" />
     <ClInclude Include="usefulInfo.h" />
@@ -162,8 +164,10 @@
   <ItemGroup>
     <ClCompile Include="eventGenerator.cpp" />
     <ClCompile Include="eventSources.cpp" />
+    <ClCompile Include="FileSystem.cpp" />
     <ClCompile Include="genericFSM.cpp" />
     <ClCompile Include="Networking.cpp" />
+    <ClCompile Include="Packages.cpp" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="States.cpp" />
