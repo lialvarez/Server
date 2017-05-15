@@ -37,6 +37,12 @@ void Networking::packageDecode()
 	receivedPackageType = (opCodes)inputPackage[1];
 	switch (receivedPackageType)
 	{
+	case WRQ_OP:
+		fileToTransfer = std::string(inputPackage.begin() + 2, inputPackage.end());
+		break;
+	case RRQ_OP:
+		fileToTransfer = std::string(inputPackage.begin() + 2, inputPackage.end());
+		break;
 	case DATA_OP:
 		blockNumber = (inputPackage[2] << 8) + inputPackage[3];
 		data = inputPackage[4];
@@ -66,6 +72,11 @@ std::string Networking::getErrorMsg()
 std::string Networking::getData()
 {
 	return data;
+}
+
+std::string Networking::getRequestedFile()
+{
+	return fileToTransfer;
 }
 
 void Networking::sendPackage(genericPackage *Pkg)

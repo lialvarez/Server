@@ -14,7 +14,7 @@ NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkIn
 bool NetworkEventSource::isThereEvent()
 { 
 	bool ret = false;
-	std::fstream fileStream;
+	std::ifstream fileStream;
 	std::string fileRequested;
 	std::string errorMsg;
 	errorCodes errorCode;

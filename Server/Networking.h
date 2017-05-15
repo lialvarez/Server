@@ -24,12 +24,12 @@ class Networking
 public:
 	Networking();
 	~Networking(); //Ver cuando llamarlo
-	std::string getServerAddres();
 	void sendPackage(genericPackage *Pkg);
 	bool receivePackage();
 	std::vector<char> getInputPackage();
 	errorCodes getErrorCode();
 	std::string getData();
+	std::string getRequestedFile();
 	std::string getErrorMsg();
 	unsigned int getBlockNumber();
 
@@ -43,7 +43,6 @@ private:
 	void packageDecode();
 
 	std::string fileToTransfer;
-
 	opCodes receivedPackageType;
 	std::string data;	//Se almacena la data en caso de recibir DATA
 	std::string errorMsg;
