@@ -99,7 +99,9 @@ bool Networking::receivePackage()
 
 	if (!error)
 	{
-		strcpy_s(&inputPackage[0], len, buf);
+		//strcpy_s(&inputPackage[0], len, buf);
+		inputPackage.clear();
+		inputPackage.insert(inputPackage.end(), buf, buf + len);
 		ret = true;
 	}
 	else

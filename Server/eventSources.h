@@ -24,13 +24,10 @@ public:
 	bool isThereEvent();
 	genericEvent* insertEvent();
 	void setServerIP(std::string _serverIP);
-	std::string getServerIP();
 	Networking *networkInterface;
-	genericPackage *pkg;
 	unsigned int expectedBlockNum;
 private:
 
-	std::string serverIP;
 };
 
 class UserEventSource : public genericEventSource

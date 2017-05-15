@@ -13,15 +13,11 @@ NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkIn
 
 bool NetworkEventSource::isThereEvent()
 { 
-	if (pkg)
-	{
-		delete pkg;
-	}
 	bool ret = false;
 	std::fstream fileStream;
 	std::string fileRequested;
 	std::string errorMsg;
-	unsigned int errorCode;
+	errorCodes errorCode;
 	std::vector<char> data;
 	unsigned int blockNumber;
 	
@@ -29,19 +25,36 @@ bool NetworkEventSource::isThereEvent()
 	{
 		switch (networkInterface->getInputPackage()[1])	//segun el tipo de paquete devuelvo el tipo de evento
 		{
+		case WRQ_OP:
+			fileRequested = std::string(&networkInterface->getInputPackage()[2]);
+			fileStream.open(fileRequested);
+			if (fileStream.is_open())	//Si el archivo YA EXISTE, invalido la solicitud
+			{
+				ret = true;
+				evCode = ERRO;
+				errorCode = FILE_ALREADY_EXISTS;
+				fileStream.close();
+			}
+			else	//Si el archivo no existe, valido la solicitud
+			{
+				ret = true;
+				evCode = WRQ;
+			}
+			break;
 		case RRQ_OP:
 			fileRequested = std::string(&networkInterface->getInputPackage()[2]);
 			fileStream.open(fileRequested);
-			if (fileStream.fail())	//Si el archivo no existe, valido la solicitud
+			if (fileStream.is_open())	//Si el archivo existe, valido la solicitud
 			{
 				ret = true;
 				evCode = RRQ;
+				fileStream.close();
 			}
 			else
 			{
 				ret = true;
 				evCode = ERRO;
-				errorCode = FILE_ALREADY_EXISTS;
+				errorCode = FILE_NOT_FOUND;
 			}
 			break;
 		case DATA_OP:
@@ -49,13 +62,11 @@ bool NetworkEventSource::isThereEvent()
 			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
 			if (blockNumber != expectedBlockNum)
 			{
-				pkg = new Error(NOT_DEFINED, "Block number conflict");
 				ret = true;
 				evCode = ERRO;
 			}
 			else
 			{
-				pkg = new Data(data, blockNumber);
 				ret = true;
 				if (data.size() < 512)
 				{
@@ -71,21 +82,18 @@ bool NetworkEventSource::isThereEvent()
 			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
 			if (blockNumber != expectedBlockNum)
 			{
-				pkg = new Error(NOT_DEFINED, "Block number conflict");
 				ret = true;
 				evCode = ERRO;
 			}
 			else
 			{
-				pkg = new Acknowledge(blockNumber);
 				ret = true;
 				evCode = ACK;
 			}
 			break;
 		case ERROR_OP:
-			errorCode = networkInterface->getInputPackage()[2];
-			errorMsg = (char *)networkInterface->getInputPackage()[4];
-			pkg = new Error(errorCode, errorMsg);
+			errorCode = (errorCodes)(networkInterface->getInputPackage()[2]);
+			errorMsg = std::string(networkInterface->getInputPackage().begin() + 4, networkInterface->getInputPackage().end());
 			ret = true;
 			evCode = ERRO;
 			break;
@@ -234,6 +242,7 @@ genericEvent * UserEventSource::insertEvent()
 	}
 	return ret;
 }
+
 genericEvent * UserEventSource::insertEvent()
 {
 	genericEvent * ret;
