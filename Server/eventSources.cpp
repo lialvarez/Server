@@ -182,10 +182,10 @@ bool UserEventSource::isThereEvent()
 	case ENTER:
 
 		command = std::string(buffer.begin(), buffer.end());	//Almaceno la linea de comando ingresada en command
-		std::transform(command.begin(), command.end(), command.begin(), tolower);	//transformo la linea ingresada a minuscula
+		std::transform(command.begin(), command.end(), command.begin(), tolower);	//
 		boost::split(words, command, boost::is_any_of(", "), boost::token_compress_on);	//Se separan las palabras ingresadas
 
-		if (words.size() == 1)	//Si se ingreso un comando de una sola palabra
+		if (words.size() == 1)
 		{
 			if (strcmp(words[0].c_str(), "quit") == 0)
 			{
@@ -197,11 +197,10 @@ bool UserEventSource::isThereEvent()
 				evCode = CLEAR;
 				ret = true;
 			}
-
 		}
-
-		buffer.clear();	//Limpia el buffer
-		words.clear();	//Limpia el vector
+		terminal->setCommandLine();
+		buffer.clear();
+		words.clear();
 		break;
 
 	default:
@@ -217,6 +216,24 @@ bool UserEventSource::isThereEvent()
 	return ret;
 }
 
+genericEvent * UserEventSource::insertEvent()
+{
+	genericEvent * ret;
+
+	switch (evCode)
+	{
+
+	case CLEAR:
+		ret = (genericEvent *) new EV_Clear(terminal);
+		break;
+	case QUIT:
+		ret = (genericEvent *) new EV_Quit;
+		break;
+	default:
+		break;
+	}
+	return ret;
+}
 genericEvent * UserEventSource::insertEvent()
 {
 	genericEvent * ret;
