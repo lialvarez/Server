@@ -1,41 +1,36 @@
-
 #include "Networking.h"
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+#include <conio.h>
 
-Networking::Networking()
+
+Networking::Networking(std::string _serverAddress): serverAddress(_serverAddress)
 {
 	IO_handler = new boost::asio::io_service();
-	serverSocket = new boost::asio::ip::tcp::socket(*IO_handler);
-	std::cout << std::endl << "Ready. Port " << CONNECTION_PORT << " created" << std::endl;
-	packageArrived = false;
+	clientSocket = new boost::asio::ip::tcp::socket(*IO_handler);
+	clientResolver = new boost::asio::ip::tcp::resolver(*IO_handler);
 }
-
 
 Networking::~Networking()
 {
-	serverSocket->close();
-	delete serverSocket;
+	clientSocket->close();
+
+	delete clientResolver;
+	delete clientSocket;
 	delete IO_handler;
 }
 
-
-void Networking::setServerAcceptor(boost::asio::ip::tcp::acceptor* newAcceptor)
-{
-	serverAcceptor = newAcceptor;
-}
-
-
 void Networking::startConnection()
 {
-	std::cout << std::endl << "Start Listening on port " << CONNECTION_PORT << std::endl;
-	serverAcceptor->accept(*serverSocket);
-	std::cout << "Somebody connected to port " << CONNECTION_PORT << std::endl;
-	serverSocket->non_blocking(true);
+	endpoint = clientResolver->resolve(
+		boost::asio::ip::tcp::resolver::query(serverAddress.c_str(), CONNECTION_PORT));
+	boost::asio::connect(*clientSocket, endpoint);
+	clientSocket->non_blocking(true);
 }
 
-
-boost::asio::io_service* Networking::getIO_handler()
+std::string Networking::getServerAddres()
 {
-	return IO_handler;
+	return serverAddress;
 }
 
 unsigned int Networking::getBlockNumber()
@@ -43,7 +38,7 @@ unsigned int Networking::getBlockNumber()
 	return blockNumber;
 }
 
-void Networking::packageDecode()	//agregarle WRQ Y RRQ
+void Networking::packageDecode()
 {
 	receivedPackageType = (opCodes)inputPackage[1];
 	switch (receivedPackageType)
@@ -64,15 +59,18 @@ void Networking::packageDecode()	//agregarle WRQ Y RRQ
 	}
 }
 
+
 errorCodes Networking::getErrorCode()
 {
 	return errorCode;
 }
 
+
 std::string Networking::getErrorMsg()
 {
 	return errorMsg;
 }
+
 
 std::string Networking::getData()
 {
@@ -84,17 +82,18 @@ void Networking::sendPackage(genericPackage *Pkg)
 {
 	Pkg->setPackage();
 
-	//char buf[PACKAGE_MAX_SIZE] = "Hello from server."; //esto se borra
-
 	size_t len;
 	boost::system::error_code error;
 
 	do
 	{													
-		len = clientSocket->write_some(boost::asio::buffer(outputPackage, packageSize), error); //declarar y hacer una funcion que ponga packageSize
+		len = clientSocket->write_some(boost::asio::buffer(Pkg->package, Pkg->package.size()), error); 
 	} while ((error.value() == WSAEWOULDBLOCK));
 	if (error)
-		std::cout << "Error while trying to connect to server " << error.message() << std::endl;
+	{ 
+		/*std::cout << "Error while trying to connect to server " << error.message() << std::endl;*/
+	}
+		
 }
 
 bool Networking::receivePackage()
@@ -110,7 +109,7 @@ bool Networking::receivePackage()
 
 	if (!error)
 	{
-		strcpy_s(inputPackage, len, buf);
+		strcpy_s(&inputPackage[0], len, buf);
 		ret = true;
 	}
 	else
@@ -120,8 +119,7 @@ bool Networking::receivePackage()
 	return ret;
 }
 
-
-MYBYTE * Networking::getInputPackage()
+std::vector<char> Networking::getInputPackage()
 {
 	return inputPackage;
 }

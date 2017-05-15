@@ -10,39 +10,40 @@
 #include <boost/bind.hpp>
 #include <Windows.h> //ver si sacar
 #include <iostream>
+#include "Packages.h"
 
-#define CONNECTION_PORT 69		//puerto TFTP
+#define CONNECTION_PORT "69"	//puerto TFTP
 #define PACKAGE_MAX_SIZE 516	
-
 
 typedef char MYBYTE;
 
-typedef enum {DATA_OP, ACK_OP, ERROR_OP}opCodes;
+
 
 class Networking
 {
 public:
+	Networking(std::string _serverAddress);
+	~Networking(); //Ver cuando llamarlo
+	std::string getServerAddres();
 	void sendPackage(genericPackage *Pkg);
-	void receivePackage();
-	Networking();//
-	~Networking(); //Ver cuando llamarlo (cuando hay error o termina la comunicacion)
-	void startConnection();//
-
-	unsigned int getBlockNumber();
-	MYBYTE *getInputPackage();
+	bool receivePackage();
+	std::vector<char> getInputPackage();
 	errorCodes getErrorCode();
 	std::string getData();
 	std::string getErrorMsg();
 	unsigned int getBlockNumber();
 
+	void startConnection();
+
 private:
-	boost::asio::io_service *IO_handler;
-	boost::asio::ip::tcp::socket *serverSocket;
-	boost::asio::ip::tcp::acceptor *serverAcceptor;
+	boost::asio::io_service* IO_handler;
+	boost::asio::ip::tcp::socket* clientSocket;
+	boost::asio::ip::tcp::resolver* clientResolver;
 	boost::asio::ip::tcp::resolver::iterator endpoint;
 
 	void packageDecode();
 
+	std::string serverAddress;
 	std::string fileToTransfer;
 
 	opCodes receivedPackageType;
@@ -51,13 +52,6 @@ private:
 	errorCodes errorCode;
 	unsigned int blockNumber;
 
-	MYBYTE *inputPackage;
-	MYBYTE *outputPackage;
-
-	const char* serverAddress;
-
-	MYBYTE *inputPackage;	//ver si quedan
-	MYBYTE *outputPackage;
-	bool packageArrived;
+	std::vector<char> inputPackage;
 };
 #endif // !NETWORKING_H
