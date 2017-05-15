@@ -6,30 +6,132 @@
 #include <boost\date_time\posix_time\posix_time.hpp>
 
 /*****  NETWORK EVENT SOURCE  *****/
+NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkInterface(_networkInterface) 
+{
+	serverIP = networkInterface->getServerAddres();
+}
 
-NetworkEventSource::NetworkEventSource() {};
-NetworkEventSource::~NetworkEventSource() {};
-
-bool NetworkEventSource::isThereEvent() //MALE: esta es la funcion que lee lo que le envian por red
+bool NetworkEventSource::isThereEvent()
 { 
-	server.receivePackage(); //en el main llamar al constructor de Networking, creando el objeto server
-	return server.getPackageArrived();
-} 
-
+	if (pkg)
+	{
+		delete pkg;
+	}
+	bool ret = false;
+	std::fstream fileStream;
+	std::string fileRequested;
+	std::string errorMsg;
+	unsigned int errorCode;
+	std::vector<char> data;
+	unsigned int blockNumber;
+	
+	if (networkInterface->receivePackage())	//verifica si se recibio algo
+	{
+		switch (networkInterface->getInputPackage()[1])	//segun el tipo de paquete devuelvo el tipo de evento
+		{
+		case RRQ_OP:
+			fileRequested = std::string(&networkInterface->getInputPackage()[2]);
+			fileStream.open(fileRequested);
+			if (fileStream.fail())	//Si el archivo no existe, valido la solicitud
+			{
+				ret = true;
+				evCode = RRQ;
+			}
+			else
+			{
+				ret = true;
+				evCode = ERRO;
+				errorCode = FILE_ALREADY_EXISTS;
+			}
+			break;
+		case DATA_OP:
+			data = std::vector<char>(networkInterface->getInputPackage().begin() + 4, networkInterface->getInputPackage().end());
+			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
+			if (blockNumber != expectedBlockNum)
+			{
+				pkg = new Error(NOT_DEFINED, "Block number conflict");
+				ret = true;
+				evCode = ERRO;
+			}
+			else
+			{
+				pkg = new Data(data, blockNumber);
+				ret = true;
+				if (data.size() < 512)
+				{
+					evCode = LAST_DATA;
+				}
+				else
+				{
+					evCode = DATA;
+				}
+			}
+			break;
+		case ACK_OP:
+			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
+			if (blockNumber != expectedBlockNum)
+			{
+				pkg = new Error(NOT_DEFINED, "Block number conflict");
+				ret = true;
+				evCode = ERRO;
+			}
+			else
+			{
+				pkg = new Acknowledge(blockNumber);
+				ret = true;
+				evCode = ACK;
+			}
+			break;
+		case ERROR_OP:
+			errorCode = networkInterface->getInputPackage()[2];
+			errorMsg = (char *)networkInterface->getInputPackage()[4];
+			pkg = new Error(errorCode, errorMsg);
+			ret = true;
+			evCode = ERRO;
+			break;
+		default:
+			break;
+		}
+	}
+	return ret;
+}
 
 void NetworkEventSource::setServerIP(std::string _serverIP)
 {
 	serverIP = _serverIP;
 }
 
-std::string NetworkEventSource::getServerIP()
+genericEvent * NetworkEventSource::insertEvent()
 {
-	return serverIP;
+	genericEvent * ret;
+	switch (evCode)
+	{
+	case RRQ:
+		ret = (genericEvent *) new EV_RRQ();
+		break;
+	case WRQ:
+		ret = (genericEvent *) new EV_WRQ();
+		break;
+	case DATA:
+		ret = (genericEvent *) new EV_Data();
+		break;
+	case LAST_DATA:
+		ret = (genericEvent *) new EV_LastData();
+		break;
+	case ACK:
+		ret = (genericEvent *) new EV_Ack();
+		break;
+	case ERRO:
+		ret = (genericEvent *) new EV_Error();
+		break;
+	default:
+		break;
+	}
+	return ret;
 }
 
 /*****  USER EVENT SOURCE  *****/
 
-//NO TOCAR LOS DE USER, CREO QUE YA ESTAN LISTOS
 
 UserEventSource::UserEventSource(Screen *terminal)
 {
@@ -40,6 +142,11 @@ UserEventSource::UserEventSource(Screen *terminal)
 std::string UserEventSource::getCommand()
 {
 	return command;
+}
+
+std::string UserEventSource::getFileToTransfer()
+{
+	return fileToTransfer;	//Devuelve el nombre del archivo a transferir
 }
 
 bool UserEventSource::isThereEvent()
@@ -75,10 +182,10 @@ bool UserEventSource::isThereEvent()
 	case ENTER:
 
 		command = std::string(buffer.begin(), buffer.end());	//Almaceno la linea de comando ingresada en command
-		std::transform(command.begin(), command.end(), command.begin(), tolower);	//
+		std::transform(command.begin(), command.end(), command.begin(), tolower);	//transformo la linea ingresada a minuscula
 		boost::split(words, command, boost::is_any_of(", "), boost::token_compress_on);	//Se separan las palabras ingresadas
 
-		if (words.size() == 1)
+		if (words.size() == 1)	//Si se ingreso un comando de una sola palabra
 		{
 			if (strcmp(words[0].c_str(), "quit") == 0)
 			{
@@ -90,10 +197,11 @@ bool UserEventSource::isThereEvent()
 				evCode = CLEAR;
 				ret = true;
 			}
+
 		}
-		terminal->setCommandLine();
-		buffer.clear();
-		words.clear();
+
+		buffer.clear();	//Limpia el buffer
+		words.clear();	//Limpia el vector
 		break;
 
 	default:
@@ -112,12 +220,10 @@ bool UserEventSource::isThereEvent()
 genericEvent * UserEventSource::insertEvent()
 {
 	genericEvent * ret;
-
 	switch (evCode)
 	{
-
 	case CLEAR:
-		ret = (genericEvent *) new EV_Clear(terminal);
+		ret = (genericEvent *) new EV_Clear;
 		break;
 	case QUIT:
 		ret = (genericEvent *) new EV_Quit;
@@ -134,6 +240,7 @@ TimeoutEventSource::TimeoutEventSource()
 {
 	timeout = false;
 	timerRunning = false;
+	timeoutsCount = 0;
 }
 
 bool TimeoutEventSource::isThereEvent()
@@ -142,7 +249,15 @@ bool TimeoutEventSource::isThereEvent()
 	{
 		timeout = true;
 		timerRunning = false;
-		evCode = TIMEOUT;
+		timeoutsCount++;
+		if (timeoutsCount == MAX_TIMEOUTS)
+		{
+			evCode = CONNECTION_FAIL;
+		}
+		else
+		{
+			evCode = TIMEOUT;
+		}
 	}
 	else
 	{
@@ -152,13 +267,18 @@ bool TimeoutEventSource::isThereEvent()
 	return timeout;
 }
 
-
 void TimeoutEventSource::startTimer()
 
-{	
+{
 	timeout = false;	//Se setea la variable de control en false, indicando que no ha ocurrido timeout
 	tInicial = clock();
 	timerRunning = true;
+	timeoutsCount = 0;
+}
+
+void TimeoutEventSource::stopTimer()
+{
+	timerRunning = false;
 }
 
 genericEvent * TimeoutEventSource::insertEvent()
@@ -169,6 +289,9 @@ genericEvent * TimeoutEventSource::insertEvent()
 	{
 	case TIMEOUT:
 		ret = (genericEvent *) new EV_Timeout;
+		break;
+	case CONNECTION_FAIL:
+		ret = (genericEvent *) new EV_ConnectionFailed;
 		break;
 	default:
 		break;

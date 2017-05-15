@@ -12,7 +12,7 @@
 #include <iostream>
 #include "Packages.h"
 
-#define CONNECTION_PORT "69"	//puerto TFTP
+#define CONNECTION_PORT 69	//puerto TFTP
 #define PACKAGE_MAX_SIZE 516	
 
 typedef char MYBYTE;
@@ -22,7 +22,7 @@ typedef char MYBYTE;
 class Networking
 {
 public:
-	Networking(std::string _serverAddress);
+	Networking();
 	~Networking(); //Ver cuando llamarlo
 	std::string getServerAddres();
 	void sendPackage(genericPackage *Pkg);
@@ -36,14 +36,12 @@ public:
 	void startConnection();
 
 private:
-	boost::asio::io_service* IO_handler;
-	boost::asio::ip::tcp::socket* clientSocket;
-	boost::asio::ip::tcp::resolver* clientResolver;
-	boost::asio::ip::tcp::resolver::iterator endpoint;
+	boost::asio::io_service*  IO_handler;
+	boost::asio::ip::tcp::socket* serverSocket;
+	boost::asio::ip::tcp::acceptor* serverAcceptor;
 
 	void packageDecode();
 
-	std::string serverAddress;
 	std::string fileToTransfer;
 
 	opCodes receivedPackageType;

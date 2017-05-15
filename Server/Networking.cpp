@@ -4,33 +4,26 @@
 #include <conio.h>
 
 
-Networking::Networking(std::string _serverAddress): serverAddress(_serverAddress)
+Networking::Networking()
 {
 	IO_handler = new boost::asio::io_service();
-	clientSocket = new boost::asio::ip::tcp::socket(*IO_handler);
-	clientResolver = new boost::asio::ip::tcp::resolver(*IO_handler);
+	serverSocket = new boost::asio::ip::tcp::socket(*IO_handler);
+	serverAcceptor = new boost::asio::ip::tcp::acceptor(*IO_handler,
+		boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), CONNECTION_PORT));
 }
 
 Networking::~Networking()
 {
-	clientSocket->close();
-
-	delete clientResolver;
-	delete clientSocket;
+	serverAcceptor->close();
+	serverSocket->close();
+	delete serverSocket;
 	delete IO_handler;
 }
 
 void Networking::startConnection()
 {
-	endpoint = clientResolver->resolve(
-		boost::asio::ip::tcp::resolver::query(serverAddress.c_str(), CONNECTION_PORT));
-	boost::asio::connect(*clientSocket, endpoint);
-	clientSocket->non_blocking(true);
-}
-
-std::string Networking::getServerAddres()
-{
-	return serverAddress;
+	serverAcceptor->accept(*serverSocket);
+	serverSocket->non_blocking(true);
 }
 
 unsigned int Networking::getBlockNumber()
@@ -40,6 +33,7 @@ unsigned int Networking::getBlockNumber()
 
 void Networking::packageDecode()
 {
+	std::string receivedFile;
 	receivedPackageType = (opCodes)inputPackage[1];
 	switch (receivedPackageType)
 	{
@@ -59,24 +53,20 @@ void Networking::packageDecode()
 	}
 }
 
-
 errorCodes Networking::getErrorCode()
 {
 	return errorCode;
 }
-
 
 std::string Networking::getErrorMsg()
 {
 	return errorMsg;
 }
 
-
 std::string Networking::getData()
 {
 	return data;
 }
-
 
 void Networking::sendPackage(genericPackage *Pkg)
 {
@@ -87,7 +77,7 @@ void Networking::sendPackage(genericPackage *Pkg)
 
 	do
 	{													
-		len = clientSocket->write_some(boost::asio::buffer(Pkg->package, Pkg->package.size()), error); 
+		len = serverSocket->write_some(boost::asio::buffer(Pkg->package, Pkg->package.size()), error); 
 	} while ((error.value() == WSAEWOULDBLOCK));
 	if (error)
 	{ 
@@ -104,7 +94,7 @@ bool Networking::receivePackage()
 	size_t len = 0;
 	do
 	{
-		len = clientSocket->read_some(boost::asio::buffer(buf), error);
+		len = serverSocket->read_some(boost::asio::buffer(buf), error);
 	} while (error.value() == WSAEWOULDBLOCK);
 
 	if (!error)

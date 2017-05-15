@@ -19,8 +19,7 @@ private:
 class EV_Clear : public genericEvent
 {
 public:
-	EV_Clear(Screen *terminal) { ev = CLEAR; this->terminal = terminal; };
-	Screen *terminal;
+	EV_Clear() { ev = CLEAR; };
 private:
 
 };
