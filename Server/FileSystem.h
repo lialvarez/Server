@@ -16,7 +16,7 @@ public:
 	void openFile(std::string fileName, openMode mode);
 	void saveData(std::vector<char> data);
 	std::vector<char> readData();
-
+	bool lastData;
 private:
 	
 	std::fstream fileStream;

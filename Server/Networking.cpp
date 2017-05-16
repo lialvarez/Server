@@ -103,10 +103,11 @@ bool Networking::receivePackage()
 	boost::system::error_code error;
 	char buf[PACKAGE_MAX_SIZE];
 	size_t len = 0;
-	do
-	{
-		len = serverSocket->read_some(boost::asio::buffer(buf), error);
-	} while (error.value() == WSAEWOULDBLOCK);
+	len = serverSocket->read_some(boost::asio::buffer(buf), error);
+	//do
+	//{
+	//	len = serverSocket->read_some(boost::asio::buffer(buf), error);
+	//} while (error.value() == WSAEWOULDBLOCK);
 
 	if (!error)
 	{

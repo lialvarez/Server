@@ -5,6 +5,7 @@
 Screen::Screen():lastLine(0)
 {
 	terminalWindow = initscr();
+	nodelay(terminalWindow, TRUE);
 	start_color();
 	init_pair(1, COLOR_WHITE, COLOR_BLACK);
 	init_pair(2, COLOR_GREEN, COLOR_BLACK);
@@ -38,7 +39,7 @@ void Screen::setCommandLine()
 void Screen::putClear(std::string inputText)
 {
 	initTerminal();
-	move(lastLine, 0);
+	move(0, 0);
 	printw(inputText.c_str());
 	lastLine = terminalWindow->_cury;
 	move(terminalWindow->_maxy - 2, 7);
@@ -59,6 +60,7 @@ void Screen::putNext(std::string inputText)
 
 	printw(inputText.c_str());
 	lastLine = terminalWindow->_cury;
+	move(terminalWindow->_maxy - 2, 7);
 	refresh();
 }
 

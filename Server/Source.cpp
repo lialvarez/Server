@@ -10,11 +10,13 @@
 int main()
 {
 	Screen Terminal;
+	FileSystem fileSystem;
 	Networking Server;
 	TimeoutEventSource Timeout;
+	SoftwareEventSource Software;
 	NetworkEventSource networkSource(&Server);
 	UserEventSource userSource(&Terminal);
-	usefulInfo Info(&userSource, &Timeout, &networkSource);
+	usefulInfo Info(&userSource, &Timeout, &networkSource, &fileSystem, &Software);
 	genericEvent *ev;
 	eventGenerator evGen(&Info);
 	genericFSM FSM;

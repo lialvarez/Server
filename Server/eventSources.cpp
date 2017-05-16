@@ -11,14 +11,12 @@ NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkIn
 
 bool NetworkEventSource::isThereEvent()
 { 
+	unsigned int blockLow, blockHigh;
 	bool ret = false;
 	std::ifstream fileStream;
-	std::string fileRequested;
-	std::string errorMsg;
-	errorCodes errorCode;
-	std::vector<char> data;
-	unsigned int blockNumber;
-	
+	std::vector<char> aux;
+
+
 	if (networkInterface->receivePackage())	//verifica si se recibio algo
 	{
 		switch (networkInterface->getInputPackage()[1])	//segun el tipo de paquete devuelvo el tipo de evento
@@ -56,8 +54,11 @@ bool NetworkEventSource::isThereEvent()
 			}
 			break;
 		case DATA_OP:
-			data = std::vector<char>(networkInterface->getInputPackage().begin() + 4, networkInterface->getInputPackage().end());
-			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
+			aux = std::vector<char>(networkInterface->getInputPackage());
+			data = std::vector<char>(aux.begin() + 4, aux.end());
+			blockLow = (unsigned int)networkInterface->getInputPackage()[3];
+			blockHigh = (unsigned int)networkInterface->getInputPackage()[2];
+			blockNumber = ((blockHigh & 0x00FF) << 8) + (blockLow & 0x00FF);
 			if (blockNumber != expectedBlockNum)
 			{
 				ret = true;
@@ -304,5 +305,24 @@ genericEvent * TimeoutEventSource::insertEvent()
 /*****  SOFTWARE EVENT SOURCE   *****/
 
 SoftwareEventSource::SoftwareEventSource() {};
-SoftwareEventSource::~SoftwareEventSource() {}
-bool SoftwareEventSource::isThereEvent() { return false; };
+
+bool SoftwareEventSource::isThereEvent()
+{
+	bool ret = false;
+	if (fileInterface->lastData)
+	{
+		evCode = LAST_DATA;
+		ret = true;
+	}
+	return ret;
+};
+
+genericEvent* SoftwareEventSource::insertEvent()
+{
+	genericEvent *ret;
+	if (evCode == LAST_DATA)
+	{
+		ret = (genericEvent *) new EV_LastData();
+	}
+	return ret;
+}

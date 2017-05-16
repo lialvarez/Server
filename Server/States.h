@@ -58,6 +58,7 @@ class ST_ReceiveFirstData : public genericState
 {
 public:
 
+	genericState* on_LastData(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Data(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Error(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Timeout(genericEvent* ev, usefulInfo * Info);
