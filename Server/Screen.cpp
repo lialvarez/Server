@@ -24,6 +24,7 @@ void Screen::initTerminal()
 		move(terminalWindow->_cury, i);
 	}
 	setCommandLine();
+	lastLine = 0;
 }
 
 void Screen::setCommandLine()

@@ -194,10 +194,10 @@ genericState * ST_ReceiveFirstData::on_LastData(genericEvent *ev, usefulInfo * I
 	Info->fileInterface->saveData(Info->networkSrc->data);	//Escribo el bloque de data en el archivo
 
 	delete Info->nextPkg;
-	Info->networkSrc->expectedBlockNum++;
+	
 	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum);	//Construyo el Ack a enviar.
 	Info->networkInterface->sendPackage(Info->nextPkg);	//Envio el Ack
-
+	Info->networkSrc->expectedBlockNum++;
 	Info->userInterface->putNext("Sending last acknowledge");
 	Info->fileInterface->closeFile();
 	
@@ -218,7 +218,7 @@ genericState * ST_ReceiveFirstData::on_Data(genericEvent * ev, usefulInfo * Info
 	delete Info->nextPkg;
 	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum);	//Construyo el Ack a enviar.
 	Info->networkInterface->sendPackage(Info->nextPkg);	//Envio el Ack
-
+	Info->networkSrc->expectedBlockNum++;
 	Info->userInterface->putNext("Sending acknowledge");
 
 	Info->timeoutSrc->startTimer();	//Reseteo timer.
@@ -253,11 +253,11 @@ genericState * ST_ReceiveData::on_Data(genericEvent * ev, usefulInfo * Info)
 	Info->fileInterface->openFile(Info->networkSrc->fileRequested, WRITE);	//abro el archivo.
 	Info->fileInterface->saveData(Info->networkSrc->data);	//Escribo el bloque de data en el archivo
 
-	Info->networkSrc->expectedBlockNum++;	//Incremento el blockNumber
+
 	delete Info->nextPkg;
 	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum);	//Construyo el Ack a enviar.
 	Info->networkInterface->sendPackage(Info->nextPkg);	//Envio el Ack
-
+	Info->networkSrc->expectedBlockNum++;	//Incremento el blockNumber
 	Info->timeoutSrc->startTimer();	//Reseteo timer.
 
 	return nullptr;
@@ -288,14 +288,13 @@ genericState * ST_ReceiveData::on_LastData(genericEvent * ev, usefulInfo * Info)
 
 	Info->fileInterface->saveData(Info->networkSrc->data);	//Escribo el bloque de data en el archivo
 	
-	Info->networkSrc->expectedBlockNum++;
+	//Info->networkSrc->expectedBlockNum++;
 	delete Info->nextPkg;	//Elimino el paquete anterior
 	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum);	//Construyo el Ack a enviar
 	Info->networkInterface->sendPackage(Info->nextPkg);	//Envio el ultimo paquete de data
 	Info->fileInterface->closeFile();	//Cierro el archivo
+	Info->userInterface->putNext("Transmission completed");
 
-	Info->timeoutSrc->startTimer();	//Reinicio el timer
-
-	genericState * ret = (genericState *) new ST_ReceiveLastAck();
+	genericState * ret = (genericState *) new ST_Idle;
 	return ret;
 }
