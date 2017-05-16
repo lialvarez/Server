@@ -23,9 +23,9 @@ void eventGenerator::generateEvent()
 	//	buffer.push_back(I->timeout->insertEvent());
 	//}
 
-	if (I->user->isThereEvent())
+	if (I->userSrc->isThereEvent())
 	{
-		buffer.push_back(I->user->insertEvent());
+		buffer.push_back(I->userSrc->insertEvent());
 	}
 }
 genericEvent * eventGenerator::getNextEvent()

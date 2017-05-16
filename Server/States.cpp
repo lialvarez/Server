@@ -75,7 +75,7 @@ genericState * ST_ReceiveFirstAck::on_Ack(genericEvent * ev, usefulInfo * Info)
 
 	Info->networkSrc->expectedBlockNum++;
 	delete Info->nextPkg;
-	Info->nextPkg = new Data(Info->fileInterface->readData, Info->networkSrc->expectedBlockNum);
+	Info->nextPkg = new Data(Info->fileInterface->readData(), Info->networkSrc->expectedBlockNum);
 	Info->networkInterface->sendPackage(Info->nextPkg);
 	
 	auxText = "Data block #" + std::to_string(Info->networkSrc->expectedBlockNum) + " sent";
@@ -112,7 +112,7 @@ genericState * ST_ReceiveAck::on_Ack(genericEvent * ev, usefulInfo * Info)
 
 	Info->networkSrc->expectedBlockNum++;
 	delete Info->nextPkg;
-	Info->nextPkg = new Data(Info->fileInterface->readData, Info->networkSrc->expectedBlockNum);
+	Info->nextPkg = new Data(Info->fileInterface->readData(), Info->networkSrc->expectedBlockNum);
 	Info->networkInterface->sendPackage(Info->nextPkg);
 
 	auxText = "Data block #" + std::to_string(Info->networkSrc->expectedBlockNum) + " sent";

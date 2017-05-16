@@ -7,9 +7,7 @@
 
 /*****  NETWORK EVENT SOURCE  *****/
 NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkInterface(_networkInterface) 
-{
-	serverIP = networkInterface->getServerAddres();
-}
+{}
 
 bool NetworkEventSource::isThereEvent()
 { 
@@ -102,11 +100,6 @@ bool NetworkEventSource::isThereEvent()
 		}
 	}
 	return ret;
-}
-
-void NetworkEventSource::setServerIP(std::string _serverIP)
-{
-	serverIP = _serverIP;
 }
 
 genericEvent * NetworkEventSource::insertEvent()
@@ -232,24 +225,7 @@ genericEvent * UserEventSource::insertEvent()
 	{
 
 	case CLEAR:
-		ret = (genericEvent *) new EV_Clear(terminal);
-		break;
-	case QUIT:
-		ret = (genericEvent *) new EV_Quit;
-		break;
-	default:
-		break;
-	}
-	return ret;
-}
-
-genericEvent * UserEventSource::insertEvent()
-{
-	genericEvent * ret;
-	switch (evCode)
-	{
-	case CLEAR:
-		ret = (genericEvent *) new EV_Clear;
+		ret = (genericEvent *) new EV_Clear();
 		break;
 	case QUIT:
 		ret = (genericEvent *) new EV_Quit;

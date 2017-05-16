@@ -38,9 +38,11 @@ void Screen::setCommandLine()
 void Screen::putClear(std::string inputText)
 {
 	initTerminal();
+	move(lastLine, 0);
 	printw(inputText.c_str());
-	refresh();
 	lastLine = terminalWindow->_cury;
+	move(terminalWindow->_maxy - 2, 7);
+	refresh();
 }
 
 void Screen::putNext(std::string inputText)
