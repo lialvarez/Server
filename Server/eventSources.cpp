@@ -314,14 +314,15 @@ genericEvent * TimeoutEventSource::insertEvent()
 
 /*****  SOFTWARE EVENT SOURCE   *****/
 
-SoftwareEventSource::SoftwareEventSource() {};
+SoftwareEventSource::SoftwareEventSource() :ev(false) {};
 
 bool SoftwareEventSource::isThereEvent()
 {
 	bool ret = false;
-	if (fileInterface->lastData)
+	if (fileInterface->lastData && !ev)
 	{
 		evCode = LAST_DATA;
+		ev = true;
 		ret = true;
 	}
 	return ret;
@@ -329,7 +330,7 @@ bool SoftwareEventSource::isThereEvent()
 
 genericEvent* SoftwareEventSource::insertEvent()
 {
-	genericEvent *ret;
+	genericEvent *ret = nullptr;
 	if (evCode == LAST_DATA)
 	{
 		ret = (genericEvent *) new EV_LastData();

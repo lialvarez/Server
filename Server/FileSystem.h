@@ -11,7 +11,7 @@ typedef enum { READ, WRITE }openMode;
 class FileSystem
 {
 public:
-
+	FileSystem();
 	void closeFile();
 	void openFile(std::string fileName, openMode mode);
 	void saveData(std::vector<char> data);

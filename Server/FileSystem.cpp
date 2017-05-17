@@ -1,14 +1,12 @@
 #include "FileSystem.h"
 
+FileSystem::FileSystem() : lastData(false){}
+
 void FileSystem::openFile(std::string fileName, openMode mode)
 {
 	if (mode == READ)
 	{
 		fileStream.open(fileName, std::fstream::in | std::fstream::binary);
-		if (fileStream.is_open())
-		{
-			bool in = true;
-		}
 	}
 	else if(mode == WRITE)
 	{

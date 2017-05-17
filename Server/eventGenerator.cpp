@@ -7,6 +7,10 @@ eventGenerator::eventGenerator(usefulInfo* _I) :buffer(16)
 
 void eventGenerator::generateEvent()
 {
+	if (I->softwareSrc->isThereEvent())
+	{
+		buffer.push_back(I->softwareSrc->insertEvent());
+	}
 
 	if (I->networkSrc->isThereEvent())
 	{

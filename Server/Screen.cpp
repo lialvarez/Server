@@ -89,6 +89,7 @@ void Screen::shiftLinesUp()
 	for (int i = 0; i < lastLine; i++)
 	{
 		mvinstr(i + 1, 0, aux);
+		clrtoeol();
 		mvprintw(i, 0, aux);
 		refresh();
 	}

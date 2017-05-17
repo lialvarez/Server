@@ -39,6 +39,9 @@ genericState* ST_Idle::on_RRQ(genericEvent *ev, usefulInfo * Info)
 	Info->nextPkg = new Data(Info->fileInterface->readData(), Info->networkSrc->expectedBlockNum);
 	Info->networkInterface->sendPackage(Info->nextPkg);	//Envio el primer paquete DATA
 
+	auxText = "Data block #" + std::to_string(Info->networkSrc->expectedBlockNum) + " sent";
+	Info->userInterface->putNext(auxText);
+
 	Info->timeoutSrc->startTimer();
 
 	return ret;
@@ -71,16 +74,26 @@ genericState *ST_Idle::on_Error(genericEvent *ev, usefulInfo * Info)
 
 
 //ST_ReceiveFirstAck
+
+genericState * ST_ReceiveFirstAck::on_LastData(genericEvent * ev, usefulInfo * Info)
+{
+	Info->userInterface->putNext("Last data package sent");
+	Info->timeoutSrc->startTimer();
+	genericState *ret = (genericState*) new ST_ReceiveLastAck;
+	return ret;
+}
+
 genericState * ST_ReceiveFirstAck::on_Ack(genericEvent * ev, usefulInfo * Info)
 {
 	std::string auxText = "Ackowledge #" + std::to_string(Info->networkSrc->blockNumber) + " received.";
 	Info->userInterface->putNext(auxText);
 
-	Info->networkSrc->expectedBlockNum++;
+	
 	delete Info->nextPkg;
+	Info->networkSrc->expectedBlockNum++;
 	Info->nextPkg = new Data(Info->fileInterface->readData(), Info->networkSrc->expectedBlockNum);
 	Info->networkInterface->sendPackage(Info->nextPkg);
-	
+
 	auxText = "Data block #" + std::to_string(Info->networkSrc->expectedBlockNum) + " sent";
 	Info->userInterface->putNext(auxText);
 

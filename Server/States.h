@@ -23,6 +23,7 @@ public:
 	genericState* on_Ack(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Error(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Timeout(genericEvent* ev, usefulInfo * Info);
+	genericState* on_LastData(genericEvent* ev, usefulInfo * Info);
 
 	std::string getSelectedFile() { return fileToTransfer; }
 	void setFileToTransfer(std::string selectedFile) { this->fileToTransfer = selectedFile; }
