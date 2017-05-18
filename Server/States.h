@@ -24,6 +24,7 @@ public:
 	genericState* on_Error(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Timeout(genericEvent* ev, usefulInfo * Info);
 	genericState* on_LastData(genericEvent* ev, usefulInfo * Info);
+	genericState* on_CloseServer(genericEvent* ev, usefulInfo * Info);
 
 	std::string getSelectedFile() { return fileToTransfer; }
 	void setFileToTransfer(std::string selectedFile) { this->fileToTransfer = selectedFile; }
@@ -39,6 +40,8 @@ public:
 	genericState* on_Error(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Timeout(genericEvent* ev, usefulInfo * Info);
 	genericState* on_LastData(genericEvent* ev, usefulInfo * Info);
+	genericState* on_CloseServer(genericEvent* ev, usefulInfo * Info);
+
 
 private:
 };
@@ -47,6 +50,7 @@ class ST_ReceiveLastAck : public genericState
 {
 public:
 
+	genericState* on_CloseServer(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Ack(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Error(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Timeout(genericEvent* ev, usefulInfo * Info);
@@ -63,6 +67,8 @@ public:
 	genericState* on_Data(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Error(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Timeout(genericEvent* ev, usefulInfo * Info);
+	genericState* on_CloseServer(genericEvent* ev, usefulInfo * Info);
+
 private:
 };
 
@@ -74,6 +80,8 @@ public:
 	genericState* on_Error(genericEvent* ev, usefulInfo * Info);
 	genericState* on_Timeout(genericEvent* ev, usefulInfo * Info);
 	genericState* on_LastData(genericEvent* ev, usefulInfo * Info);
+	genericState* on_CloseServer(genericEvent* ev, usefulInfo * Info);
+
 
 private:
 };

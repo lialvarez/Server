@@ -49,9 +49,8 @@ genericState* ST_Idle::on_RRQ(genericEvent *ev, usefulInfo * Info)
 
 genericState *ST_Idle::on_CloseServer(genericEvent* ev, usefulInfo * Info)
 {
-	genericState *ret = (genericState*) new ST_Idle();
-	ret->setLastEvent(QUIT);
-	return ret;
+	setLastEvent(QUIT);
+	return nullptr;
 }
 
 genericState *ST_Idle::on_ClearTerminal(genericEvent *ev, usefulInfo * Info)
@@ -74,6 +73,14 @@ genericState *ST_Idle::on_Error(genericEvent *ev, usefulInfo * Info)
 
 
 //ST_ReceiveFirstAck
+
+genericState * ST_ReceiveFirstAck::on_CloseServer(genericEvent *ev, usefulInfo * Info)
+{
+	delete Info->nextPkg;
+	Info->fileInterface->closeFile();
+	setLastEvent(QUIT);
+	return nullptr;
+}
 
 genericState * ST_ReceiveFirstAck::on_LastData(genericEvent * ev, usefulInfo * Info)
 {
@@ -121,6 +128,15 @@ genericState * ST_ReceiveFirstAck::on_Timeout(genericEvent * ev, usefulInfo * In
 }
 
 //ST_ReceiveAck
+
+genericState * ST_ReceiveAck::on_CloseServer(genericEvent *ev, usefulInfo * Info)
+{
+	delete Info->nextPkg;
+	Info->fileInterface->closeFile();
+	setLastEvent(QUIT);
+	return nullptr;
+}
+
 genericState * ST_ReceiveAck::on_Ack(genericEvent * ev, usefulInfo * Info)
 {
 	std::string auxText = "Ackowledge #" + std::to_string(Info->networkSrc->blockNumber) + " received.";
@@ -166,6 +182,15 @@ genericState * ST_ReceiveAck::on_LastData(genericEvent * ev, usefulInfo * Info)
 }
 
 //ST_ReceiveLastAck
+
+genericState * ST_ReceiveLastAck::on_CloseServer(genericEvent *ev, usefulInfo * Info)
+{
+	delete Info->nextPkg;
+	Info->fileInterface->closeFile();
+	setLastEvent(QUIT);
+	return nullptr;
+}
+
 genericState * ST_ReceiveLastAck::on_Ack(genericEvent * ev, usefulInfo * Info)
 {
 	std::string auxText = "Ackowledge #" + std::to_string(Info->networkSrc->blockNumber) + " received.";
@@ -196,6 +221,14 @@ genericState * ST_ReceiveLastAck::on_Timeout(genericEvent * ev, usefulInfo * Inf
 }
 
 //ST_ReceiveFirstData
+
+genericState * ST_ReceiveFirstData::on_CloseServer(genericEvent *ev, usefulInfo * Info)
+{
+	delete Info->nextPkg;
+	Info->fileInterface->closeFile();
+	setLastEvent(QUIT);
+	return nullptr;
+}
 
 genericState * ST_ReceiveFirstData::on_LastData(genericEvent *ev, usefulInfo * Info)
 {
@@ -258,6 +291,15 @@ genericState * ST_ReceiveFirstData::on_Timeout(genericEvent * ev, usefulInfo * I
 }
 
 //ST_ReceiveData
+
+genericState * ST_ReceiveData::on_CloseServer(genericEvent *ev, usefulInfo * Info)
+{
+	delete Info->nextPkg;
+	Info->fileInterface->closeFile();
+	setLastEvent(QUIT);
+	return nullptr;
+}
+
 genericState * ST_ReceiveData::on_Data(genericEvent * ev, usefulInfo * Info)
 {
 	std::string auxText = "Data block #" + std::to_string(Info->networkSrc->blockNumber) + " received.";

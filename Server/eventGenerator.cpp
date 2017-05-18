@@ -7,6 +7,10 @@ eventGenerator::eventGenerator(usefulInfo* _I) :buffer(16)
 
 void eventGenerator::generateEvent()
 {
+	if (I->userSrc->isThereEvent())
+	{
+		buffer.push_back(I->userSrc->insertEvent());
+	}
 	if (I->softwareSrc->isThereEvent())
 	{
 		buffer.push_back(I->softwareSrc->insertEvent());
@@ -22,10 +26,7 @@ void eventGenerator::generateEvent()
 		buffer.push_back(I->timeoutSrc->insertEvent());
 	}
 
-	if (I->userSrc->isThereEvent())
-	{
-		buffer.push_back(I->userSrc->insertEvent());
-	}
+
 }
 genericEvent * eventGenerator::getNextEvent()
 {

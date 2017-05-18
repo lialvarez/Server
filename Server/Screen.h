@@ -23,8 +23,10 @@ public:
 	void putClear(std::string inputText);
 	void showErrorMsg(errorCodes code, std::string errorMsg);
 	void shiftLinesUp();
+	unsigned inputPos;
 	WINDOW * terminalWindow;
 private:
+	
 	unsigned lastLine;
 
 };

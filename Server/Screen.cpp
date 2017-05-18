@@ -33,6 +33,7 @@ void Screen::setCommandLine()
 	clrtoeol();
 	color_set(2, NULL);
 	printw("Server>");
+	inputPos = terminalWindow->_curx;
 	color_set(1, NULL);
 	refresh();
 }
@@ -61,7 +62,7 @@ void Screen::putNext(std::string inputText)
 
 	printw(inputText.c_str());
 	lastLine = terminalWindow->_cury;
-	move(terminalWindow->_maxy - 2, 7);
+	move(terminalWindow->_maxy - 2, inputPos);
 	refresh();
 }
 

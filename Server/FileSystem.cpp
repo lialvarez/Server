@@ -10,7 +10,16 @@ void FileSystem::openFile(std::string fileName, openMode mode)
 	}
 	else if(mode == WRITE)
 	{
-		fileStream.open(fileName, std::fstream::out | std::fstream::binary);
+		std::string aux = fileName;
+		std::size_t found;
+		do
+		{
+			found = aux.find('/');
+			aux = aux.substr(found + 1);
+		} while (found != std::string::npos);
+
+		aux = "Downloads/" + aux;
+		fileStream.open(aux.c_str(), std::fstream::out | std::fstream::binary);
 	}
 	lastData = false;
 }

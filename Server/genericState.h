@@ -10,7 +10,7 @@ public:
 
 	// Estas funciones responden a los eventos recibidos en el estado actual. Por default, se toma que los eventos recibidos son eventos inesperados, lo que sse indica devolviendo nullptr. Al ser virtuales, las clases de los estados especificos que heredan a genericState pueden redefinir que respuesta tomar ante los eventos que no son inesperados para ese estado en especifico.
 	virtual genericState* on_NoEv(genericEvent* ev) { return nullptr; }
-	virtual genericState* on_CloseServer(genericEvent* ev, usefulInfo * Info) { return nullptr; }
+	virtual genericState* on_CloseServer(genericEvent* ev, usefulInfo * Info) {	return nullptr;	}
 	virtual genericState* on_Help(genericEvent* ev, usefulInfo * Info) { return nullptr; }
 	virtual genericState* on_ClearTerminal(genericEvent *ev, usefulInfo * Info) { return nullptr; }
 	virtual genericState* on_EmptyCommand(genericEvent* ev, usefulInfo * Info) { return nullptr; }

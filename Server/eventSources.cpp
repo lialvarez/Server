@@ -188,6 +188,7 @@ bool UserEventSource::isThereEvent()
 		{
 			terminal->terminalWindow->_curx++;	//Para que el cursor no pse vaya del area permitida
 		}
+		terminal->inputPos = terminal->terminalWindow->_curx;
 		ret = false;	//No hay evento
 		break;
 
@@ -223,6 +224,7 @@ bool UserEventSource::isThereEvent()
 			buffer.push_back(inputChar);
 			ret = false;
 		}
+		terminal->inputPos++;
 		break;
 	}
 	return ret;
