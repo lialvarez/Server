@@ -15,7 +15,7 @@ bool NetworkEventSource::isThereEvent()
 	bool ret = false;
 	std::ifstream fileStream;
 	std::vector<char> aux;
-
+	std::string auxstr;
 
 	if (networkInterface->receivePackage())	//verifica si se recibio algo
 	{
@@ -23,7 +23,8 @@ bool NetworkEventSource::isThereEvent()
 		{
 		case WRQ_OP:
 			fileRequested = std::string(&networkInterface->getInputPackage()[2]);
-			fileStream.open(fileRequested);
+			auxstr = "Downloads/" + fileRequested;
+			fileStream.open(auxstr);
 			if (fileStream.is_open())	//Si el archivo YA EXISTE, invalido la solicitud
 			{
 				ret = true;
@@ -39,7 +40,8 @@ bool NetworkEventSource::isThereEvent()
 			break;
 		case RRQ_OP:
 			fileRequested = std::string(&networkInterface->getInputPackage()[2]);
-			fileStream.open(fileRequested);
+			auxstr = "Downloads/" + fileRequested;
+			fileStream.open(auxstr);
 			if (fileStream.is_open())	//Si el archivo existe, valido la solicitud
 			{
 				ret = true;
